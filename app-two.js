@@ -28,11 +28,29 @@ const notes = [
 ];
 function render() {
   listElement.innerHTML = "";
+  if (notes.length === 0) {
+    listElement.innerHTML = `<p>Нет заметок</p>`;
+  }
   for (let i = 0; i < notes.length; i++) {
     listElement.insertAdjacentHTML("beforeend", getNoteTemplate(notes[i], i));
   }
 }
 render();
+
+listElement.onclick = function (event) {
+  if (event.target.dataset.index) {
+    const index = Number(event.target.dataset.index);
+    const type = event.target.dataset.type;
+
+    if (type === "toggle") {
+      notes[index].completed = !notes[index].completed;
+    } else if (type === "remove") {
+      console.log("remove", index);
+      notes.splice(index, 1);
+    }
+    render();
+  }
+};
 
 function getNoteTemplate(note, index) {
   return `
@@ -45,8 +63,8 @@ function getNoteTemplate(note, index) {
                   <span>
                     <span class="btn btn-small btn-${
                       note.completed ? "warning" : "success"
-                    }" data-index = ${index}>&check;</span>
-                    <span class="btn btn-small btn-danger">&times;</span>
+                    }" data-index = ${index} data-type="toggle">&check;</span>
+                    <span class="btn btn-small btn-danger" data-type="remove" data-index = ${index}>&times;</span>
                   </span>
                 </li>`;
 }
